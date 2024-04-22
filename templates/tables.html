@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Flask and SQLite </title>
+	</head>
+	<style>
+		table, th, td {
+		border:1px solid black;
+		}
+		</style>
+	<body>
+		<table style="width:100%">
+			<tr>
+      <th>ID</th>
+			<th>Name</th>
+			<th>Email</th>
+			</tr>
+			{%for user in user_data%}
+			<tr>
+				<td>{{user[0]}}</td>
+				<td>{{user[1]}}</td>
+				<td>{{user[2]}}</td>
+				</tr>
+			{%endfor%}
+		</table>
+
+
+    <table style="width:100%">
+			<tr>
+      <th>ID</th>
+			<th>User ID (Foreign)</th>
+			<th>Description</th>
+			<th>Date</th>
+			<th>Amount</th>
+			<th>Category</th>
+			</tr>
+			{%for expense in expense_data%}
+			<tr>
+				<td>{{expense[0]}}</td>
+				<td>{{expense[1]}}</td>
+				<td>{{expense[2]}}</td>
+				<td>{{expense[2]}}</td>
+				<td>{{expense[2]}}</td>
+				<td>{{expense[2]}}</td>
+				<td>{{expense[2]}}</td>
+				</tr>
+			{%endfor%}
+		</table>
+
+    <table style="width:100%">
+			<tr>
+      <th>ID</th>
+			<th>User ID (Foreign)</th>
+			<th>Title</th>
+			<th>Description</th>
+			<th>Target Amount</th>
+			<th>Start Time</th>
+			<th>End Time</th>
+			<th>Progress Level</th>
+			<th>Priority Level</th>
+			<th>Frequency</th>
+
+
+			</tr>
+			{%for goal in goal_data%}
+			<tr>
+				<td>{{goal[0]}}</td>
+				<td>{{goal[1]}}</td>
+				<td>{{goal[2]}}</td>
+				</tr>
+			{%endfor%}
+		</table>
+	</body>
+</html>

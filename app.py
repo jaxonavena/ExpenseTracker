@@ -12,8 +12,10 @@ def index():
 
 connect = sqlite3.connect('database.db')
 connect.execute('CREATE TABLE IF NOT EXISTS USERS (ID INTEGER PRIMARY KEY, name TEXT, email TEXT)')
-connect.execute('CREATE TABLE IF NOT EXISTS EXPENSE (ID INTEGER PRIMARY KEY, user_id INTEGER, description TEXT, date TEXT, amount REAL, category TEXT, FOREIGN KEY(user_id) REFERENCES USERS(ID))')
-connect.execute('CREATE TABLE IF NOT EXISTS GOAL (ID INTEGER PRIMARY KEY, user_id INTEGER, title TEXT, description TEXT, target_amount REAL, start_time TEXT, end_time TEXT, progress_level TEXT, priority_level TEXT, frequency TEXT, FOREIGN KEY(user_id) REFERENCES USERS(ID))')
+connect.execute('DROP TABLE IF EXISTS EXPENSE')
+connect.execute('DROP TABLE IF EXISTS GOAL')
+connect.execute('CREATE TABLE IF NOT EXISTS EXPENSES (ID INTEGER PRIMARY KEY, user_id INTEGER, description TEXT, date TEXT, amount REAL, category TEXT, FOREIGN KEY(user_id) REFERENCES USERS(ID))')
+connect.execute('CREATE TABLE IF NOT EXISTS GOALS (ID INTEGER PRIMARY KEY, user_id INTEGER, title TEXT, description TEXT, target_amount REAL, start_time TEXT, end_time TEXT, progress_level TEXT, priority_level TEXT, frequency TEXT, FOREIGN KEY(user_id) REFERENCES USERS(ID))')
 
 @app.route('/join', methods=['GET', 'POST'])
 def join():
@@ -34,14 +36,22 @@ def join():
     return render_template('join.html')
 
 
-@app.route('/users')
-def users():
+@app.route('/tables')
+def tables():
   connect = sqlite3.connect('database.db')
   cursor = connect.cursor()
-  cursor.execute('SELECT * FROM USERS')
 
-  data = cursor.fetchall()
-  return render_template("users.html", data=data)
+  cursor.execute('SELECT * FROM USERS')
+  users_data = cursor.fetchall()
+
+  cursor.execute('SELECT * FROM EXPENSES')
+  expenses_data = cursor.fetchall()
+
+  cursor.execute('SELECT * FROM GOALS')
+  goals_data = cursor.fetchall()
+
+  return render_template("tables.html", users_data=users_data, expenses_data=expenses_data, goals_data=goals_data)
+
 
 
 if __name__ == '__main__':
