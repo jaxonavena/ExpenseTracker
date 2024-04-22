@@ -9,13 +9,14 @@
 		}
 		</style>
 	<body>
+    <caption>Users</caption>
 		<table style="width:100%">
 			<tr>
       <th>ID</th>
 			<th>Name</th>
 			<th>Email</th>
 			</tr>
-			{%for user in user_data%}
+			{%for user in users_data%}
 			<tr>
 				<td>{{user[0]}}</td>
 				<td>{{user[1]}}</td>
@@ -23,8 +24,10 @@
 				</tr>
 			{%endfor%}
 		</table>
+    <br>
 
 
+    <caption>Expenses</caption>
     <table style="width:100%">
 			<tr>
       <th>ID</th>
@@ -34,19 +37,21 @@
 			<th>Amount</th>
 			<th>Category</th>
 			</tr>
-			{%for expense in expense_data%}
+			{%for expense in expenses_data%}
 			<tr>
 				<td>{{expense[0]}}</td>
 				<td>{{expense[1]}}</td>
 				<td>{{expense[2]}}</td>
-				<td>{{expense[2]}}</td>
-				<td>{{expense[2]}}</td>
-				<td>{{expense[2]}}</td>
-				<td>{{expense[2]}}</td>
+				<td>{{expense[3]}}</td>
+				<td>{{expense[4]}}</td>
+				<td>{{expense[5]}}</td>
 				</tr>
 			{%endfor%}
 		</table>
+    <br>
 
+
+    <caption>Goals</caption>
     <table style="width:100%">
 			<tr>
       <th>ID</th>
@@ -59,14 +64,19 @@
 			<th>Progress Level</th>
 			<th>Priority Level</th>
 			<th>Frequency</th>
-
-
 			</tr>
-			{%for goal in goal_data%}
+			{%for goal in goals_data%}
 			<tr>
 				<td>{{goal[0]}}</td>
 				<td>{{goal[1]}}</td>
 				<td>{{goal[2]}}</td>
+				<td>{{goal[3]}}</td>
+				<td>{{goal[4]}}</td>
+				<td>{{goal[5]}}</td>
+				<td>{{goal[6]}}</td>
+				<td>{{goal[7]}}</td>
+				<td>{{goal[8]}}</td>
+				<td>{{goal[9]}}</td>
 				</tr>
 			{%endfor%}
 		</table>

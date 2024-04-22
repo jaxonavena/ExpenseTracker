@@ -5,7 +5,10 @@
 	</head>
 	<body>
 		<h1>Expense Tracker</h1>
-		<button class="btn" type="button" onclick="window.location.href='{{ url_for('join') }}';">Fill form to get updates</button><br/>
-		<button class="btn" type="button" onclick="window.location.href='{{ url_for('tables') }}';">Check user list</button>
+		<button class="btn" type="button" onclick="window.location.href='{{ url_for('add_user') }}';">Add User</button><br/>
+		<button class="btn" type="button" onclick="window.location.href='{{ url_for('add_expense') }}';">Add Expense</button><br/>
+		<button class="btn" type="button" onclick="window.location.href='{{ url_for('add_goal') }}';">Add Goal</button><br/>
+
+		<button class="btn" type="button" onclick="window.location.href='{{ url_for('tables') }}';">View Tables</button>
 	</body>
 </html>
