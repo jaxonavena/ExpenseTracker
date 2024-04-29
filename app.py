@@ -64,13 +64,15 @@ def login():
               # print("setting user_id", user[0])
 
 
-
-              cursor.execute("SELECT balance, income FROM USERSS WHERE email=?", (email,))
-              user_data = cursor.fetchone()
               user_id = session.get('user_id')
+              cursor.execute("SELECT balance, income FROM USERSS WHERE ID=?", (user_id,))
+              user_data = cursor.fetchone()
               cursor.execute("SELECT SUM(amount) FROM EXPENSES WHERE user_id=?", (user_id,))
               expenses_data = cursor.fetchone()
               flash('You were successfully logged in', 'success')
+              print("cuurent_balance is ", user_data[0])
+              print("User data", user_data)
+              print("The total income of this userr isss:", user_data[1])
               return render_template(
               'home.html',
               current_balance=user_data[0] if user_data else 0,
