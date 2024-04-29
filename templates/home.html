@@ -203,11 +203,11 @@
         <div class="cards-container">
           <div class="card">
             <h2>Current Balance</h2>
-            <h3>${{ current_balance }}</h3>
+            <h3 id="current_balance">${{ current_balance }}</h3>
           </div>
           <div class="card">
             <h2>Total Income</h2>
-            <h3>${{ total_income }}</h3>
+            <h3 id="total_income">${{ total_income }}</h3>
           </div>
           <div class="card">
             <h2>Total Expenses</h2>
@@ -493,12 +493,16 @@
           .then(response => response.json())
           .then(data => {
               if(data.success) {
-                // nothing
+                document.getElementById('current_balance').innerText = new_balance.toFixed(2);
+                document.getElementById('total_income').innerText = new_income.toFixed(2);
               } else {
-                  console.error('Failed to update settings:', data.error);
+                console.error('Failed to update settings:', data.error);
               }
           })
           .catch(error => console.error("Error updating settings:", error));
+
+          document.getElementById('new_balance').value = '';
+          document.getElementById('new_income').value = '';
       }
     </script>
   </body>
