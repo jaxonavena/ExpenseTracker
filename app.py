@@ -165,7 +165,7 @@ def add_expense():
             connect.commit()
 
         flash('Expense added successfully!', 'success')
-        return redirect(url_for('dashboard'))
+        return jsonify({'success': True})
   else:
       return render_template('login_signup.html')
 

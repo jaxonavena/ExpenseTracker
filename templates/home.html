@@ -255,30 +255,37 @@
           Delete Selected
         </button>
         <div id="add-expense-container" style="display: none">
-          <form id="new_expense_form" method="POST" action="/add_expense">
+          <form id="new_expense_form">
             <input
               type="text"
               placeholder="Description"
               name="description"
               required
             />
-            <input type="text" placeholder="Amount" name="amount" id="amount" required />
-
+            <input
+              type="text"
+              placeholder="Amount"
+              name="amount"
+              id="amount"
+              required
+            />
 
             <select id="category" name="category" required>
-                <option value="">Category</option>
-                <option value="expense-category-option1">Bills</option>
-                <option value="expense-category-option2">Food</option>
-                <option value="expense-category-option3">Entertainment</option>
-                <option value="expense-category-option4">Shopping</option>
-                <option value="expense-category-option5">Travel</option>
-                <option value="expense-category-option6">Education</option>
-                <option value="expense-category-option7">Subscriptions</option>
-                <option value="expense-category-option8">Miscellaneous</option>
+              <option value="">Category</option>
+              <option value="expense-category-option1">Bills</option>
+              <option value="expense-category-option2">Food</option>
+              <option value="expense-category-option3">Entertainment</option>
+              <option value="expense-category-option4">Shopping</option>
+              <option value="expense-category-option5">Travel</option>
+              <option value="expense-category-option6">Education</option>
+              <option value="expense-category-option7">Subscriptions</option>
+              <option value="expense-category-option8">Miscellaneous</option>
             </select>
 
             <input type="date" name="date" id="expense_date" required />
-            <button type="submit">Add Expense</button>
+            <button type="submit" onclick="addExpenseForm()">
+              Add Expense
+            </button>
           </form>
         </div>
         <div id="transaction-list">
@@ -287,50 +294,59 @@
       </div>
 
       <div id="goals" class="content-section">
-          <h2>Goals</h2>
-          <button id="toggle-add-goal-form" onclick="toggleAddGoalForm()">
-              Add New Goal
-          </button>
-          <div id="add-goal-container" style="display: none">
-              <form id="new_goal_form" method="POST" action="/add_goal">
-                  <input type="text" placeholder="Title" name="title" required />
-                  <textarea placeholder="Description" name="description"></textarea>
-                  <input type="number" placeholder="Target Amount" name="target_amount" required />
-                  <input type="date" name="start_time" id="goal_start_time" required />
-                  <input type="date" name="end_time" id="goal_end_time" required />
+        <h2>Goals</h2>
+        <button id="toggle-add-goal-form" onclick="toggleAddGoalForm()">
+          Add New Goal
+        </button>
+        <div id="add-goal-container" style="display: none">
+          <form id="new_goal_form" method="POST" action="/add_goal">
+            <input type="text" placeholder="Title" name="title" required />
+            <textarea placeholder="Description" name="description"></textarea>
+            <input
+              type="number"
+              placeholder="Target Amount"
+              name="target_amount"
+              required
+            />
+            <input
+              type="date"
+              name="start_time"
+              id="goal_start_time"
+              required
+            />
+            <input type="date" name="end_time" id="goal_end_time" required />
 
-                  <select id="progress_level" name="progress_level" required>
-                    <option value="">Progress Level</option>
-                    <option value="fresh-start-prog">Fresh Start</option>
-                    <option value="gaining-ground-prog">Gaining Ground</option>
-                    <option value="halfway-there-prog">Halfway There</option>
-                    <option value="almost-done-prog">Almost Done</option>
-                    <option value="completedd-prog">Completed</option>
-                  </select>
+            <select id="progress_level" name="progress_level" required>
+              <option value="">Progress Level</option>
+              <option value="fresh-start-prog">Fresh Start</option>
+              <option value="gaining-ground-prog">Gaining Ground</option>
+              <option value="halfway-there-prog">Halfway There</option>
+              <option value="almost-done-prog">Almost Done</option>
+              <option value="completedd-prog">Completed</option>
+            </select>
 
-                  <select id="priority-level" name="priority_level" required>
-                    <option value="">Priority Level</option>
-                    <option value="high-priority">High</option>
-                    <option value="medium-priority">Medium</option>
-                    <option value="low-priority">Low</option>
-                  </select>
+            <select id="priority-level" name="priority_level" required>
+              <option value="">Priority Level</option>
+              <option value="high-priority">High</option>
+              <option value="medium-priority">Medium</option>
+              <option value="low-priority">Low</option>
+            </select>
 
-                  <select id="frequency" name="frequency" required>
-                    <option value="">Frequency</option>
-                    <option value="daily-freq">Daily</option>
-                    <option value="weekly-freq">Weekly</option>
-                    <option value="biweekly-freq">Biweekly</option>
-                    <option value="monthly-freq">Monthly</option>
-                    <option value="quarterly-freq">Quarterly</option>
-                    <option value="yearly-freq">Yearly</option>
-                  </select>
+            <select id="frequency" name="frequency" required>
+              <option value="">Frequency</option>
+              <option value="daily-freq">Daily</option>
+              <option value="weekly-freq">Weekly</option>
+              <option value="biweekly-freq">Biweekly</option>
+              <option value="monthly-freq">Monthly</option>
+              <option value="quarterly-freq">Quarterly</option>
+              <option value="yearly-freq">Yearly</option>
+            </select>
 
-                  <button type="submit">Add Goal</button>
-              </form>
-          </div>
-          <!-- Display existing goals here -->
+            <button type="submit">Add Goal</button>
+          </form>
+        </div>
+        <!-- Display existing goals here -->
       </div>
-
 
       <div id="settings" class="content-section">
         <h2>User Settings</h2>
@@ -360,303 +376,336 @@
 
     <script>
 
-        fetch("/monthly_expenses")
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.error) {
-                console.error("Error fetching monthly expenses:", data.error);
-              } else {
-                createChart(data);
-              }
-            })
-            .catch((error) =>
-              console.error("Error fetching monthly expenses:", error)
-            );
-
-          function createChart(monthlyExpenses) {
-            var monthlyIncome = Array(12).fill({{ total_income }});
-            console.log(monthlyExpenses);
-            var ctx = document
-              .getElementById("incomeExpenseChart")
-              .getContext("2d");
-            new Chart(ctx, {
-              type: "bar",
-              data: {
-                labels: [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ],
-                datasets: [
-                  {
-                    label: "Expenses",
-                    data: monthlyExpenses.monthly_expenses,
-                    backgroundColor: "rgba(255, 99, 132, 0.5)",
-                    borderColor: "rgba(255, 99, 132, 1)",
-                    borderWidth: 1,
-                  },
-                  {
-                    label: "Income",
-                    data: monthlyIncome,
-                    backgroundColor: "rgba(54, 162, 235, 0.5)",
-                    borderColor: "rgba(54, 162, 235, 1)",
-                    borderWidth: 1,
-                  },
-                ],
-              },
-              options: {
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                  x: {
-                    grid: {
-                      display: false,
-                    },
-                  },
-                },
-                plugins: {
-                  legend: {
-                    display: true,
-                    position: "bottom",
-                  },
-                  title: {
-                    display: true,
-                    text: "Monthly Income vs. Monthly Expenses",
-                    font: {
-                      size: 24,
-                    },
-                    padding: {
-                      top: 10,
-                      bottom: 30,
-                    },
-                  },
-                },
-                responsive: true,
-                maintainAspectRatio: false,
-              },
-            });
-          }
-
-          function hideAllSections() {
-            document
-              .querySelectorAll(".content-section")
-              .forEach(function (section) {
-                section.style.display = "none";
-              });
-          }
-
-          function showSection(sectionId) {
-            hideAllSections();
-            const sectionToShow = document.querySelector(sectionId);
-            if (sectionToShow) {
-              sectionToShow.style.display = "block";
-            }
-          }
-
-          document.querySelectorAll(".sidebar a").forEach(function (link) {
-            link.addEventListener("click", function (e) {
-              e.preventDefault();
-              const sectionId = this.getAttribute("href");
-              showSection(sectionId);
-            });
-          });
-          showSection("#dashboard-section");
-          document.querySelectorAll(".sidebar a").forEach(function (link) {
-            link.addEventListener("click", function (e) {
-              e.preventDefault();
-              const sectionId = this.getAttribute("href");
-              showSection(sectionId);
-
-            if (sectionId === "#transactions") {
-              fetchTransactions();
-            }
-            });
-          });
-
-
-
-          function fetchTransactions() {
-            fetch("/get_transactions")
+          fetch("/monthly_expenses")
               .then((response) => response.json())
               .then((data) => {
                 if (data.error) {
-                  console.error("Failed to fetch transactions:", data.error);
-                  document.getElementById("transaction-list").innerHTML =
-                    "You need to log in to view transactions.";
+                  console.error("Error fetching monthly expenses:", data.error);
                 } else {
-                  displayTransactions(data.expenses);
-                  console.log("Data';;;;;;", data.expenses)
+                  createChart(data);
                 }
               })
               .catch((error) =>
-                console.error("Error fetching transactions:", error)
+                console.error("Error fetching monthly expenses:", error)
               );
-          }
 
-          function displayTransactions(expenses) {
-            const transactionList = document.getElementById("transaction-list");
-            transactionList.innerHTML = "";
-            expenses.forEach((expense, index) => {
-              const div = document.createElement("div");
-              div.className = "transaction-item";
-              div.innerHTML = `
-              <input type="checkbox" id="expense-${expense.ID}" name="selected_expense" value="${expense.ID}">
-              <label for="expense-${expense.ID}">
-                <p>Date: ${expense.date}</p>
-                <p>Description: ${expense.description}</p>
-                <p>Amount: $${expense.amount}</p>
-                <p>Category: ${getCategoryName(expense.category)}</p>
-              </label>
-              `;
-              transactionList.appendChild(div);
-            });
-          }
+            function createChart(monthlyExpenses) {
+              var monthlyIncome = Array(12).fill({{ total_income }});
+              console.log(monthlyExpenses);
+              var ctx = document
+                .getElementById("incomeExpenseChart")
+                .getContext("2d");
+              new Chart(ctx, {
+                type: "bar",
+                data: {
+                  labels: [
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dec",
+                  ],
+                  datasets: [
+                    {
+                      label: "Expenses",
+                      data: monthlyExpenses.monthly_expenses,
+                      backgroundColor: "rgba(255, 99, 132, 0.5)",
+                      borderColor: "rgba(255, 99, 132, 1)",
+                      borderWidth: 1,
+                    },
+                    {
+                      label: "Income",
+                      data: monthlyIncome,
+                      backgroundColor: "rgba(54, 162, 235, 0.5)",
+                      borderColor: "rgba(54, 162, 235, 1)",
+                      borderWidth: 1,
+                    },
+                  ],
+                },
+                options: {
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                    },
+                    x: {
+                      grid: {
+                        display: false,
+                      },
+                    },
+                  },
+                  plugins: {
+                    legend: {
+                      display: true,
+                      position: "bottom",
+                    },
+                    title: {
+                      display: true,
+                      text: "Monthly Income vs. Monthly Expenses",
+                      font: {
+                        size: 24,
+                      },
+                      padding: {
+                        top: 10,
+                        bottom: 30,
+                      },
+                    },
+                  },
+                  responsive: true,
+                  maintainAspectRatio: false,
+                },
+              });
+            }
 
-          document.getElementById("new_expense_form").onsubmit = function () {
-            document.getElementById("submit_button").disabled = true;
-            return true;
-          };
+            function hideAllSections() {
+              document
+                .querySelectorAll(".content-section")
+                .forEach(function (section) {
+                  section.style.display = "none";
+                });
+            }
 
-          function toggleAddExpense() {
-            var form = document.getElementById("add-expense-container");
-            form.style.display = form.style.display === "none" ? "block" : "none";
-          }
-
-
-          function toggleAddGoalForm() {
-              var button = document.getElementById("toggle-add-goal-form");
-              var form = document.getElementById("add-goal-container");
-
-              if (form.style.display === "none") {
-                  // If form is hidden, show the form and hide the button
-                  form.style.display = "block";
-                  button.style.display = "none";
-              } else {
-                  // If form is visible, hide the form and show the button
-                  form.style.display = "none";
-                  button.style.display = "block";
+            function showSection(sectionId) {
+              hideAllSections();
+              const sectionToShow = document.querySelector(sectionId);
+              if (sectionToShow) {
+                sectionToShow.style.display = "block";
               }
+            }
+
+            document.querySelectorAll(".sidebar a").forEach(function (link) {
+              link.addEventListener("click", function (e) {
+                e.preventDefault();
+                const sectionId = this.getAttribute("href");
+                showSection(sectionId);
+              });
+            });
+            showSection("#dashboard-section");
+            document.querySelectorAll(".sidebar a").forEach(function (link) {
+              link.addEventListener("click", function (e) {
+                e.preventDefault();
+                const sectionId = this.getAttribute("href");
+                showSection(sectionId);
+
+              if (sectionId === "#transactions") {
+                fetchTransactions();
+              }
+              });
+            });
+
+
+
+            function fetchTransactions() {
+              fetch("/get_transactions")
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.error) {
+                    console.error("Failed to fetch transactions:", data.error);
+                    document.getElementById("transaction-list").innerHTML =
+                      "You need to log in to view transactions.";
+                  } else {
+                    displayTransactions(data.expenses);
+                    console.log("Data';;;;;;", data.expenses)
+                  }
+                })
+                .catch((error) =>
+                  console.error("Error fetching transactions:", error)
+                );
+            }
+
+            function displayTransactions(expenses) {
+              const transactionList = document.getElementById("transaction-list");
+              transactionList.innerHTML = "";
+              expenses.forEach((expense, index) => {
+                const div = document.createElement("div");
+                div.className = "transaction-item";
+                div.innerHTML = `
+                <input type="checkbox" id="expense-${expense.ID}" name="selected_expense" value="${expense.ID}">
+                <label for="expense-${expense.ID}">
+                  <p>Date: ${expense.date}</p>
+                  <p>Description: ${expense.description}</p>
+                  <p>Amount: $${expense.amount}</p>
+                  <p>Category: ${getCategoryName(expense.category)}</p>
+                </label>
+                `;
+                transactionList.appendChild(div);
+              });
+            }
+
+            document.getElementById("new_expense_form").onsubmit = function () {
+              document.getElementById("submit_button").disabled = true;
+              return true;
+            };
+
+            function toggleAddExpense() {
+              var form = document.getElementById("add-expense-container");
+              form.style.display = form.style.display === "none" ? "block" : "none";
+            }
+
+
+            function toggleAddGoalForm() {
+                var button = document.getElementById("toggle-add-goal-form");
+                var form = document.getElementById("add-goal-container");
+
+                if (form.style.display === "none") {
+                    // If form is hidden, show the form and hide the button
+                    form.style.display = "block";
+                    button.style.display = "none";
+                } else {
+                    // If form is visible, hide the form and show the button
+                    form.style.display = "none";
+                    button.style.display = "block";
+                }
+            }
+
+
+            document.getElementById("new_goal_form").onsubmit = function () {
+                // Disable submit button to prevent multiple submissions
+                document.querySelector("#new_goal_form button[type='submit']").disabled = true;
+                return true;
+            };
+
+
+            function deleteSelectedExpenses() {
+              const selectedExpenses = document.querySelectorAll('input[name="selected_expense"]:checked');
+              console.log("Expenses:", selectedExpenses)
+              const idsToDelete = Array.from(selectedExpenses).map(input => input.value);
+              console.log("idsa", idsToDelete)
+              fetch("/delete_expenses", {
+                  method: "POST",
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ ids: idsToDelete })
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if(data.success) {
+                      fetchTransactions(); // Refresh the list after deletion
+                  } else {
+                      console.error('Failed to delete transactions:', data.error);
+                  }
+              })
+              .catch(error => console.error("Error deleting transactions:", error));
           }
 
+          function updateSettings() {
+            const new_balance = document.getElementById('new_balance').valueAsNumber;
+            const new_income = document.getElementById('new_income').valueAsNumber;
 
-          document.getElementById("new_goal_form").onsubmit = function () {
-              // Disable submit button to prevent multiple submissions
-              document.querySelector("#new_goal_form button[type='submit']").disabled = true;
-              return true;
-          };
+            console.log("balance:", new_balance);
+            console.log("income:", new_income);
 
-
-          function deleteSelectedExpenses() {
-            const selectedExpenses = document.querySelectorAll('input[name="selected_expense"]:checked');
-            console.log("Expenses:", selectedExpenses)
-            const idsToDelete = Array.from(selectedExpenses).map(input => input.value);
-            console.log("idsa", idsToDelete)
-            fetch("/delete_expenses", {
+            fetch("/update_settings", {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ids: idsToDelete })
+                body: JSON.stringify({ new_balance: new_balance, new_income: new_income })
             })
             .then(response => response.json())
             .then(data => {
                 if(data.success) {
-                    fetchTransactions(); // Refresh the list after deletion
+                  document.getElementById('current_balance').innerText = new_balance.toFixed(2);
+                  document.getElementById('total_income').innerText = new_income.toFixed(2);
                 } else {
-                    console.error('Failed to delete transactions:', data.error);
+                  console.error('Failed to update settings:', data.error);
                 }
             })
-            .catch(error => console.error("Error deleting transactions:", error));
+            .catch(error => console.error("Error updating settings:", error));
+
+            document.getElementById('new_balance').value = '';
+            document.getElementById('new_income').value = '';
         }
 
-        function updateSettings() {
-          const new_balance = document.getElementById('new_balance').valueAsNumber;
-          const new_income = document.getElementById('new_income').valueAsNumber;
 
-          console.log("balance:", new_balance);
-          console.log("income:", new_income);
 
-          fetch("/update_settings", {
-              method: "POST",
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ new_balance: new_balance, new_income: new_income })
+        document.addEventListener('DOMContentLoaded', function () {
+          const form = document.getElementById('new_expense_form');
+          if(form) {
+              form.addEventListener('submit', function(event) {
+                  event.preventDefault();
+                  addExpenseForm();
+              });
+          }
+      });
+        function addExpenseForm() {
+          const form = document.getElementById('new_expense_form');
+          const formData = new FormData(form);
+
+          fetch('/add_expense', {
+            method: 'POST',
+            body: formData  // Do not set Content-Type header, let the browser set it
           })
           .then(response => response.json())
           .then(data => {
-              if(data.success) {
-                document.getElementById('current_balance').innerText = new_balance.toFixed(2);
-                document.getElementById('total_income').innerText = new_income.toFixed(2);
-              } else {
-                console.error('Failed to update settings:', data.error);
-              }
+            if (data.success) {
+              alert('Expense added successfully!');
+              window.location.reload();
+              showSection("#transactions");  // Refresh transactions view
+            } else {
+              alert('Failed to add expense');
+            }
           })
-          .catch(error => console.error("Error updating settings:", error));
-
-          document.getElementById('new_balance').value = '';
-          document.getElementById('new_income').value = '';
+          .catch(error => console.error('Error:', error));
       }
 
-      document.getElementById('new_expense_form').onsubmit = function () {
-        var amount = document.getElementById('amount').value;
-        if (!/^\d+(\.\d{1,2})?$/.test(amount)) {
-          alert('Please enter a valid amount (Up to two decimal places allowed)');
-          return false;
+
+        document.getElementById('new_expense_form').onsubmit = function () {
+          var amount = document.getElementById('amount').value;
+          if (!/^\d+(\.\d{1,2})?$/.test(amount)) {
+            alert('Please enter a valid amount (Up to two decimal places allowed)');
+            return false;
+          }
+          return true;
+        };
+
+
+        // Make expense form and goal form calendars defaults
+        // Get today's date in the format "YYYY-MM-DD"
+        const today = new Date()
+        const today_formatted = today.toISOString().slice(0, 10);
+        console.log("TODAY", today)
+
+        const a_month_from_now = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())
+        console.log("in a month temp", a_month_from_now)
+        a_month_from_now_formatted = a_month_from_now.toISOString().slice(0, 10);
+        console.log("in a month real", a_month_from_now_formatted)
+
+        // Set the value of the date input field to today's date
+        document.getElementById('expense_date').value = today_formatted;
+        document.getElementById('goal_start_time').value = today_formatted;
+        document.getElementById('goal_end_time').value = a_month_from_now_formatted;
+
+        // Function to get category name based on category ID
+        function getCategoryName(categoryId) {
+          switch(categoryId) {
+            case "expense-category-option1":
+              return "Bills";
+            case "expense-category-option2":
+              return "Food";
+            case "expense-category-option3":
+              return "Entertainment";
+            case "expense-category-option4":
+              return "Shopping";
+            case "expense-category-option5":
+              return "Travel";
+            case "expense-category-option6":
+              return "Education";
+            case "expense-category-option7":
+              return "Subscriptions";
+            case "expense-category-option8":
+              return "Miscellaneous";
+            default:
+              return "Unknown";
+          }
         }
-        return true;
-      };
-
-
-      // Make expense form and goal form calendars defaults
-      // Get today's date in the format "YYYY-MM-DD"
-      const today = new Date()
-      const today_formatted = today.toISOString().slice(0, 10);
-      console.log("TODAY", today)
-
-      const a_month_from_now = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())
-      console.log("in a month temp", a_month_from_now)
-      a_month_from_now_formatted = a_month_from_now.toISOString().slice(0, 10);
-      console.log("in a month real", a_month_from_now_formatted)
-
-      // Set the value of the date input field to today's date
-      document.getElementById('expense_date').value = today_formatted;
-      document.getElementById('goal_start_time').value = today_formatted;
-      document.getElementById('goal_end_time').value = a_month_from_now_formatted;
-
-      // Function to get category name based on category ID
-      function getCategoryName(categoryId) {
-        switch(categoryId) {
-          case "expense-category-option1":
-            return "Bills";
-          case "expense-category-option2":
-            return "Food";
-          case "expense-category-option3":
-            return "Entertainment";
-          case "expense-category-option4":
-            return "Shopping";
-          case "expense-category-option5":
-            return "Travel";
-          case "expense-category-option6":
-            return "Education";
-          case "expense-category-option7":
-            return "Subscriptions";
-          case "expense-category-option8":
-            return "Miscellaneous";
-          default:
-            return "Unknown";
-        }
-      }
     </script>
   </body>
 </html>
