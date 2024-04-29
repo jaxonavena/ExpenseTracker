@@ -82,7 +82,21 @@
         background: #ffffff;
       }
 
+      .goal-item {
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background: #ffffff;
+      }
+
+
       .transaction-item p {
+        margin: 5px 0;
+        color: #333;
+      }
+
+      .goal-item p {
         margin: 5px 0;
         color: #333;
       }
@@ -182,9 +196,23 @@
         cursor: pointer;
       }
 
+      #delete-selected-goals button {
+        padding: 10px;
+        margin-right: 10px;
+        background-color: #5c67f2;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
       #delete-selected button:hover {
         background-color: #5058e5;
       }
+
+      #delete-selected-goals button:hover {
+        background-color: #5058e5;
+      }
+
       @media screen and (max-width: 767px) {
         .sidebar {
           width: 200%;
@@ -293,44 +321,56 @@
         </div>
       </div>
 
-      <div id="goals" class="content-section">
-        <h2>Goals</h2>
-        <button id="toggle-add-goal-form" onclick="toggleAddGoalForm()">
-          Add New Goal
-        </button>
-        <div id="add-goal-container" style="display: none">
-          <form id="new_goal_form" method="POST" action="/add_goal">
-            <input type="text" placeholder="Title" name="title" required />
-            <textarea placeholder="Description" name="description"></textarea>
-            <input
-              type="number"
-              placeholder="Target Amount"
-              name="target_amount"
-              required
-            />
-            <input
-              type="date"
-              name="start_time"
-              id="goal_start_time"
-              required
-            />
-            <input type="date" name="end_time" id="goal_end_time" required />
+      <div id="goals" class="content-section"> 
 
-            <select id="progress_level" name="progress_level" required>
-              <option value="">Progress Level</option>
-              <option value="fresh-start-prog">Fresh Start</option>
-              <option value="gaining-ground-prog">Gaining Ground</option>
-              <option value="halfway-there-prog">Halfway There</option>
-              <option value="almost-done-prog">Almost Done</option>
-              <option value="completedd-prog">Completed</option>
-            </select>
+          <h2>Goals</h2>
+          <button id="toggle-add-goal-form" onclick="toggleAddGoalForm()">
+              Add New Goal
+          </button>
+          <button id="delete-selected-goals" onclick="deleteSelectedGoals()">
+            Delete Selected
+          </button>
+          <div id="add-goal-container" style="display: none">
+              <form id="new_goal_form" method="POST" action="/add_goal">
+                  <input type="text" placeholder="Title" name="title" required />
+                  <input type="text" placeholder="Description" name="description" required />
+                  <input type="number" placeholder="Target Amount" name="target_amount" required />
+                  <input type="date" name="start_time" id="goal_start_time" required />
+                  <input type="date" name="end_time" id="goal_end_time" required />
 
-            <select id="priority-level" name="priority_level" required>
-              <option value="">Priority Level</option>
-              <option value="high-priority">High</option>
-              <option value="medium-priority">Medium</option>
-              <option value="low-priority">Low</option>
-            </select>
+                  <select id="progress_level" name="progress_level" required>
+                    <option value="">Progress Level</option>
+                    <option value="fresh-start-prog">Fresh Start</option>
+                    <option value="gaining-ground-prog">Gaining Ground</option>
+                    <option value="halfway-there-prog">Halfway There</option>
+                    <option value="almost-done-prog">Almost Done</option>
+                    <option value="completedd-prog">Completed</option>
+                  </select>
+
+                  <select id="priority-level" name="priority_level" required>
+                    <option value="">Priority Level</option>
+                    <option value="high-priority">High</option>
+                    <option value="medium-priority">Medium</option>
+                    <option value="low-priority">Low</option>
+                  </select>
+
+                  <select id="frequency" name="frequency" required>
+                    <option value="">Frequency</option>
+                    <option value="daily-freq">Daily</option>
+                    <option value="weekly-freq">Weekly</option>
+                    <option value="biweekly-freq">Biweekly</option>
+                    <option value="monthly-freq">Monthly</option>
+                    <option value="quarterly-freq">Quarterly</option>
+                    <option value="yearly-freq">Yearly</option>
+                  </select>
+
+                  <button type="submit">Add Goal</button>
+              </form>
+          </div>
+          <div id="goals-list">
+            <!-- Display existing goals here -->
+          </div>
+      </div>
 
             <select id="frequency" name="frequency" required>
               <option value="">Frequency</option>
@@ -478,7 +518,7 @@
                 sectionToShow.style.display = "block";
               }
             }
-
+      
             document.querySelectorAll(".sidebar a").forEach(function (link) {
               link.addEventListener("click", function (e) {
                 e.preventDefault();
@@ -496,10 +536,11 @@
               if (sectionId === "#transactions") {
                 fetchTransactions();
               }
-              });
+            else if (sectionId === "#goals") {
+              fetchGoals();
+            }
             });
-
-
+           });
 
             function fetchTransactions() {
               fetch("/get_transactions")
@@ -519,29 +560,69 @@
                 );
             }
 
-            function displayTransactions(expenses) {
-              const transactionList = document.getElementById("transaction-list");
-              transactionList.innerHTML = "";
-              expenses.forEach((expense, index) => {
-                const div = document.createElement("div");
-                div.className = "transaction-item";
-                div.innerHTML = `
-                <input type="checkbox" id="expense-${expense.ID}" name="selected_expense" value="${expense.ID}">
-                <label for="expense-${expense.ID}">
-                  <p>Date: ${expense.date}</p>
-                  <p>Description: ${expense.description}</p>
-                  <p>Amount: $${expense.amount}</p>
-                  <p>Category: ${getCategoryName(expense.category)}</p>
-                </label>
-                `;
-                transactionList.appendChild(div);
-              });
-            }
+          function fetchGoals() {
+            fetch("/get_goals")
+              .then((response) => response.json())
+              .then((data) => {
+                console.log("data for goals", data)
+                if (data.error) {
+                  console.error("Failed to fetch goals:", data.error);
+                  document.getElementById("goals-list").innerHTML =
+                    "You need to log in to view goals.";
+                } else {
+                  displayGoals(data.goals);
+                  console.log("Data';;;;;;", data.goals)
+                }
+              })
+              .catch((error) =>
+                console.error("Error fetching goals:", error)
+              );
+          }
 
-            document.getElementById("new_expense_form").onsubmit = function () {
-              document.getElementById("submit_button").disabled = true;
-              return true;
-            };
+          function displayTransactions(expenses) {
+            const transactionList = document.getElementById("transaction-list");
+            transactionList.innerHTML = "";
+            expenses.forEach((expense, index) => {
+              const div = document.createElement("div");
+              div.className = "transaction-item";
+              div.innerHTML = `
+              <input type="checkbox" id="expense-${expense.ID}" name="selected_expense" value="${expense.ID}">
+              <label for="expense-${expense.ID}">
+                <p>Date: ${expense.date}</p>
+                <p>Description: ${expense.description}</p>
+                <p>Amount: $${expense.amount}</p>
+                <p>Category: ${getCategoryName(expense.category)}</p>
+              </label>
+              `;
+              transactionList.appendChild(div);
+            });
+          }
+
+          function displayGoals(goals) {
+            const goalsList = document.getElementById("goals-list");
+            goalsList.innerHTML = "";
+            goals.forEach((goal, index) => {
+              const div = document.createElement("div");
+              div.className = "goal-item";
+              div.innerHTML = `
+              <input type="checkbox" id="goal-${goal.ID}" name="selected_goal" value="${goal.ID}">
+              <label for="goal-${goal.ID}">
+                <p>Title: ${goal.title}</p>
+                <p>Target Amount: $${goal.target_amount}</p>
+                <p>Start Time: ${goal.start_time}</p>
+                <p>End Time: ${goal.end_time}</p>
+                <p>Progress Level: ${goal.progress_level}</p>
+                <p>Priority Level: ${goal.priority_level}</p>
+              </label>
+              `;
+              goalsList.appendChild(div);
+            });
+          }
+
+          document.getElementById("new_expense_form").onsubmit = function () {
+            document.getElementById("submit_button").disabled = true;
+            return true;
+          };
 
             function toggleAddExpense() {
               var form = document.getElementById("add-expense-container");
@@ -624,6 +705,32 @@
             document.getElementById('new_income').value = '';
         }
 
+        function deleteSelectedGoals() {
+            const selectedGoals = document.querySelectorAll('input[name="selected_goal"]:checked');
+            console.log("Goals:", selectedGoals)
+            const idsToDelete = Array.from(selectedGoals).map(input => input.value);
+            console.log("idsa", idsToDelete)
+            fetch("/delete_goals", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ids: idsToDelete })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    fetchGoals(); // Refresh the list after deletion
+                } else {
+                    console.error('Failed to delete goals:', data.error);
+                }
+            })
+            .catch(error => console.error("Error deleting goals:", error));
+        }
+
+        function updateSettings() {
+          const new_balance = document.getElementById('new_balance').valueAsNumber;
+          const new_income = document.getElementById('new_income').valueAsNumber;
 
 
         document.addEventListener('DOMContentLoaded', function () {
