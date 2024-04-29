@@ -84,6 +84,20 @@ def login():
     return render_template('login_signup.html')
 
 
+
+def get_category_name(category_id):
+    category_mapping = {
+        "expense-category-option1": "Bills",
+        "expense-category-option2": "Food",
+        "expense-category-option3": "Entertainment",
+        "expense-category-option4": "Shopping",
+        "expense-category-option5": "Travel",
+        "expense-category-option6": "Education",
+        "expense-category-option7": "Subscriptions",
+        "expense-category-option8": "Miscellaneous",
+    }
+    return category_mapping.get(category_id, "Unknown")
+
 @app.route('/add_expense', methods=['GET', 'POST'])
 def add_expense():
   if request.method == 'POST':
@@ -97,15 +111,24 @@ def add_expense():
         date = request.form['date']
         amount = request.form['amount']
         category = request.form['category']
+        category_name = get_category_name(category)
 
         with sqlite3.connect("database.db") as connect:
             cursor = connect.cursor()
+
             cursor.execute("SELECT MAX(id) FROM EXPENSES")
             max_id = cursor.fetchone()[0]
             expense_id = max_id + 1 if max_id is not None else 1
 
+            # Retrieve current balance
+            cursor.execute("SELECT balance FROM USERSS WHERE ID=?", (user_id,))
+            current_balance = cursor.fetchone()[0]
+            new_balance = current_balance - float(amount)
+            # Update the balance in the database
+            cursor.execute("UPDATE USERSS SET balance = ? WHERE ID = ?", (new_balance, user_id))
+
             cursor.execute("INSERT INTO EXPENSES (id, user_id, description, date, amount, category) VALUES (?,?,?,?,?,?)",
-                           (expense_id, user_id, description, date, float(amount), category))
+                           (expense_id, user_id, description, date, float(amount), category_name))
             connect.commit()
 
         flash('Expense added successfully!', 'success')
