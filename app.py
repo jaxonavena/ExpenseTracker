@@ -27,7 +27,7 @@ def signup():
             user_id_tuple = connect.execute("SELECT CASE WHEN MAX(ID) IS NULL THEN 1 ELSE MAX(ID) + 1 END AS next_id FROM USERSS")
             user_id = user_id_tuple.fetchone()[0]
             print("SIGNUP USER ID", user_id)
-            session['user_id'] = user_id
+            # session['user_id'] = user_id
 
             name = request.form['name_signup']
             email = request.form['email_signup']
