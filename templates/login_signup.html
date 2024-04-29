@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login/Signup</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      form {
+        margin-top: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      input[type="number"] {
+        width: calc(100% - 22px);
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      input[type="submit"],
+      .toggle {
+        background-color: #5c67f2;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      input[type="submit"]:hover,
+      .toggle:hover {
+        background-color: #5058e5;
+      }
+      .toggle {
+        margin-top: 10px;
+        background-color: #777;
+      }
+      h2 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <form id="loginForm" method="POST" action="/login">
+        <label for="email_login">Email:</label>
+        <input
+          type="email"
+          id="email_login"
+          name="email_login"
+          placeholder="Enter your email"
+          required
+        />
+        <label for="password_login">Password:</label>
+        <input
+          type="password"
+          id="password_login"
+          name="password_login"
+          placeholder="Enter your password"
+          required
+        />
+        <input type="submit" value="Login" />
+        <button type="button" class="toggle" onclick="toggleForms()">
+          Don't have an account? Sign up
+        </button>
+      </form>
+      <form
+        id="signupForm"
+        method="POST"
+        action="/signup"
+        style="display: none"
+      >
+        <label for="name_signup">Name:</label>
+        <input
+          type="text"
+          id="name_signup"
+          name="name_signup"
+          placeholder="Enter your name"
+          required
+        />
+        <label for="email_signup">Email:</label>
+        <input
+          type="email"
+          id="email_signup"
+          name="email_signup"
+          placeholder="Enter your email"
+          required
+        />
+        <label for="balance_signup">Total Bank Balance:</label>
+        <input
+          type="number"
+          id="balance_signup"
+          name="balance_signup"
+          placeholder="Enter your total bank balance"
+          required
+        />
+        <label for="income_signup">Monthly Income:</label>
+        <input
+          type="number"
+          id="income_signup"
+          name="income_signup"
+          placeholder="Enter your monthly income"
+          required
+        />
+        <label for="password_signup">Password:</label>
+        <input
+          type="password"
+          id="password_signup"
+          name="password_signup"
+          placeholder="Enter your password"
+          required
+        />
+        <input type="submit" value="Signup" />
+        <button type="button" class="toggle" onclick="toggleForms()">
+          Already have an account? Login
+        </button>
+      </form>
+    </div>
+    <script>
+      function toggleForms() {
+        var loginForm = document.getElementById("loginForm");
+        var signupForm = document.getElementById("signupForm");
+        if (loginForm.style.display === "none") {
+          loginForm.style.display = "block";
+          signupForm.style.display = "none";
+        } else {
+          loginForm.style.display = "none";
+          signupForm.style.display = "block";
+        }
+      }
+    </script>
+  </body>
+</html>
