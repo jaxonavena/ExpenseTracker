@@ -111,6 +111,30 @@
       #new_expense_form button:hover {
         background-color: #5058e5;
       }
+
+      #new_expense_form select {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        background-color: #fff; /* Background color */
+        color: #333; /* Text color */
+      }
+
+      #new_expense_form select:focus {
+        outline: none;
+        border-color: #5c67f2; /* Border color when focused */
+      }
+
+      #new_expense_form select:hover {
+        border-color: #5c67f2; /* Border color on hover */
+      }
+
+      #new_expense_form select option {
+        background-color: #fff; /* Background color */
+        color: #333; /* Text color */
+      }
+
       #toggle-add-form {
         padding: 10px;
         margin-top: 20px;
@@ -203,11 +227,11 @@
         <div class="cards-container">
           <div class="card">
             <h2>Current Balance</h2>
-            <h3>${{ current_balance }}</h3>
+            <h3 id="current_balance">${{ current_balance }}</h3>
           </div>
           <div class="card">
             <h2>Total Income</h2>
-            <h3>${{ total_income }}</h3>
+            <h3 id="total_income">${{ total_income }}</h3>
           </div>
           <div class="card">
             <h2>Total Expenses</h2>
@@ -237,14 +261,22 @@
               name="description"
               required
             />
-            <input type="number" placeholder="Amount" name="amount" required />
-            <input
-              type="text"
-              placeholder="Category"
-              name="category"
-              required
-            />
-            <input type="date" name="date" required />
+            <input type="text" placeholder="Amount" name="amount" id="amount" required />
+
+
+            <select id="category" name="category" required>
+                <option value="">Category</option>
+                <option value="expense-category-option1">Bills</option>
+                <option value="expense-category-option2">Food</option>
+                <option value="expense-category-option3">Entertainment</option>
+                <option value="expense-category-option4">Shopping</option>
+                <option value="expense-category-option5">Travel</option>
+                <option value="expense-category-option6">Education</option>
+                <option value="expense-category-option7">Subscriptions</option>
+                <option value="expense-category-option8">Miscellaneous</option>
+            </select>
+
+            <input type="date" name="date" id="expense_date" required />
             <button type="submit">Add Expense</button>
           </form>
         </div>
@@ -436,7 +468,7 @@
                 <p>Date: ${expense.date}</p>
                 <p>Description: ${expense.description}</p>
                 <p>Amount: $${expense.amount}</p>
-                <p>Category: ${expense.category}</p>
+                <p>Category: ${getCategoryName(expense.category)}</p>
               </label>
               `;
               transactionList.appendChild(div);
@@ -493,12 +525,56 @@
           .then(response => response.json())
           .then(data => {
               if(data.success) {
-                // nothing
+                document.getElementById('current_balance').innerText = new_balance.toFixed(2);
+                document.getElementById('total_income').innerText = new_income.toFixed(2);
               } else {
-                  console.error('Failed to update settings:', data.error);
+                console.error('Failed to update settings:', data.error);
               }
           })
           .catch(error => console.error("Error updating settings:", error));
+
+          document.getElementById('new_balance').value = '';
+          document.getElementById('new_income').value = '';
+      }
+
+      document.getElementById('new_expense_form').onsubmit = function () {
+        var amount = document.getElementById('amount').value;
+        if (!/^\d+(\.\d{1,2})?$/.test(amount)) {
+          alert('Please enter a valid amount (Up to two decimal places allowed)');
+          return false;
+        }
+        return true;
+      };
+
+
+      // Make expense form calendar default to today
+      // Get today's date in the format "YYYY-MM-DD"
+      const today = new Date().toISOString().slice(0, 10);
+      // Set the value of the date input field to today's date
+      document.getElementById('expense_date').value = today;
+
+      // Function to get category name based on category ID
+      function getCategoryName(categoryId) {
+        switch(categoryId) {
+          case "expense-category-option1":
+            return "Bills";
+          case "expense-category-option2":
+            return "Food";
+          case "expense-category-option3":
+            return "Entertainment";
+          case "expense-category-option4":
+            return "Shopping";
+          case "expense-category-option5":
+            return "Travel";
+          case "expense-category-option6":
+            return "Education";
+          case "expense-category-option7":
+            return "Subscriptions";
+          case "expense-category-option8":
+            return "Miscellaneous";
+          default:
+            return "Unknown";
+        }
       }
     </script>
   </body>
