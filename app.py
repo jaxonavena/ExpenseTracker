@@ -84,6 +84,7 @@ def login():
     return render_template('login_signup.html')
 
 
+# DB TABLE MAPPINGS ----------------------------------------------------------------------------------------------------------
 
 def get_category_name(category_id):
     category_mapping = {
@@ -97,6 +98,38 @@ def get_category_name(category_id):
         "expense-category-option8": "Miscellaneous",
     }
     return category_mapping.get(category_id, "Unknown")
+
+def get_progress_level(progress_id):
+    progress_mapping = {
+        "fresh-start-prog": "Fresh Start",
+        "gaining-ground-prog": "Gaining Ground",
+        "halfway-there-prog": "Halfway There",
+        "almost-done-prog": "Almost Done",
+        "completedd-prog": "Completed",
+    }
+    return progress_mapping.get(progress_id, "Unknown")
+
+def get_priority_level(priority_id):
+    priority_mapping = {
+        "high-priority": "High",
+        "medium-priority": "Medium",
+        "low-priority": "Low",
+    }
+    return priority_mapping.get(priority_id, "Unknown")
+
+def get_frequency(frequency_id):
+    frequency_mapping = {
+        "daily-freq": "Daily",
+        "weekly-freq": "Weekly",
+        "biweekly-freq": "Biweekly",
+        "monthly-freq": "Monthly",
+        "quarterly-freq": "Quarterly",
+        "yearly-freq": "Yearly",
+    }
+    return frequency_mapping.get(frequency_id, "Unknown")
+
+# END DB TABLE MAPPINGS -----------------------------------------------------------------------------------------------
+
 
 @app.route('/add_expense', methods=['GET', 'POST'])
 def add_expense():
@@ -193,20 +226,31 @@ def add_goal():
       return jsonify({'error': 'User not logged in'}), 401
 
     with sqlite3.connect("database.db") as connect:
-      goal_id = request.form['goal_id'] # TODO: MAKE IT COUNT ON IT'S OWN
-      user_id = request.form['user_id'] # TODO: MAKE IT SOURCE THE USER ID, AND ONLY ALLOW USERS TO MAKE EXPENSES AND GOALS
+      cursor = connect.cursor()
+
+      cursor.execute("SELECT MAX(id) FROM GOALS")
+      current_highest_goal_id = cursor.fetchone()[0]
+      goal_id = current_highest_goal_id + 1 if current_highest_goal_id is not None else 1
+
       title = request.form['title']
       description = request.form['description'] #TODO: ALLOW NULL?
-      target_amount = request.form['target_amount']
+      target_amount = float(request.form['target_amount'])
       start_time = request.form['start_time'] # TODO: HAVE DEFAULT?
       end_time = request.form['end_time'] # TODO: HAVE DEFAULT?
+
       progress_level = request.form['progress_level'] # TODO: HAVE DEFAULT
+      progress_level_name = get_progress_level(progress_level)
+
       priority_level = request.form['priority_level'] # TODO: HAVE DEFAULT
+      priority_level_name = get_priority_level(priority_level)
+
       frequency = request.form['frequency'] # What was this again? If we want it to repeat? TODO: ALLOW NULL
+      frequency_name = get_frequency(frequency)
+
 
 
       cursor = connect.cursor()
-      cursor.execute("INSERT INTO GOALS (id, user_id, title, description, target_amount, start_time, end_time, progress_level, priority_level, frequency) VALUES (?,?,?,?,?,?,?,?,?,?)", (goal_id, user_id, title, description, target_amount, start_time, end_time, progress_level, priority_level, frequency))
+      cursor.execute("INSERT INTO GOALS (id, user_id, title, description, target_amount, start_time, end_time, progress_level, priority_level, frequency) VALUES (?,?,?,?,?,?,?,?,?,?)", (goal_id, user_id, title, description, target_amount, start_time, end_time, progress_level_name, priority_level_name, frequency_name))
       connect.commit()
     return render_template("home.html")
   else:

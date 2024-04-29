@@ -219,6 +219,7 @@
       <a href="#transactions"
         ><i class="fas fa-exchange-alt"></i> View Transactions</a
       >
+      <a href="#goals"><i class="fas fa-bullseye"></i> Goals</a>
       <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
     </div>
     <div class="main">
@@ -284,6 +285,52 @@
           <!-- Transactions will be dynamically loaded here -->
         </div>
       </div>
+
+      <div id="goals" class="content-section">
+          <h2>Goals</h2>
+          <button id="toggle-add-goal-form" onclick="toggleAddGoalForm()">
+              Add New Goal
+          </button>
+          <div id="add-goal-container" style="display: none">
+              <form id="new_goal_form" method="POST" action="/add_goal">
+                  <input type="text" placeholder="Title" name="title" required />
+                  <textarea placeholder="Description" name="description"></textarea>
+                  <input type="number" placeholder="Target Amount" name="target_amount" required />
+                  <input type="date" name="start_time" id="goal_start_time" required />
+                  <input type="date" name="end_time" id="goal_end_time" required />
+
+                  <select id="progress_level" name="progress_level" required>
+                    <option value="">Progress Level</option>
+                    <option value="fresh-start-prog">Fresh Start</option>
+                    <option value="gaining-ground-prog">Gaining Ground</option>
+                    <option value="halfway-there-prog">Halfway There</option>
+                    <option value="almost-done-prog">Almost Done</option>
+                    <option value="completedd-prog">Completed</option>
+                  </select>
+
+                  <select id="priority-level" name="priority_level" required>
+                    <option value="">Priority Level</option>
+                    <option value="high-priority">High</option>
+                    <option value="medium-priority">Medium</option>
+                    <option value="low-priority">Low</option>
+                  </select>
+
+                  <select id="frequency" name="frequency" required>
+                    <option value="">Frequency</option>
+                    <option value="daily-freq">Daily</option>
+                    <option value="weekly-freq">Weekly</option>
+                    <option value="biweekly-freq">Biweekly</option>
+                    <option value="monthly-freq">Monthly</option>
+                    <option value="quarterly-freq">Quarterly</option>
+                    <option value="yearly-freq">Yearly</option>
+                  </select>
+
+                  <button type="submit">Add Goal</button>
+              </form>
+          </div>
+          <!-- Display existing goals here -->
+      </div>
+
 
       <div id="settings" class="content-section">
         <h2>User Settings</h2>
@@ -485,6 +532,30 @@
             form.style.display = form.style.display === "none" ? "block" : "none";
           }
 
+
+          function toggleAddGoalForm() {
+              var button = document.getElementById("toggle-add-goal-form");
+              var form = document.getElementById("add-goal-container");
+
+              if (form.style.display === "none") {
+                  // If form is hidden, show the form and hide the button
+                  form.style.display = "block";
+                  button.style.display = "none";
+              } else {
+                  // If form is visible, hide the form and show the button
+                  form.style.display = "none";
+                  button.style.display = "block";
+              }
+          }
+
+
+          document.getElementById("new_goal_form").onsubmit = function () {
+              // Disable submit button to prevent multiple submissions
+              document.querySelector("#new_goal_form button[type='submit']").disabled = true;
+              return true;
+          };
+
+
           function deleteSelectedExpenses() {
             const selectedExpenses = document.querySelectorAll('input[name="selected_expense"]:checked');
             console.log("Expenses:", selectedExpenses)
@@ -547,11 +618,21 @@
       };
 
 
-      // Make expense form calendar default to today
+      // Make expense form and goal form calendars defaults
       // Get today's date in the format "YYYY-MM-DD"
-      const today = new Date().toISOString().slice(0, 10);
+      const today = new Date()
+      const today_formatted = today.toISOString().slice(0, 10);
+      console.log("TODAY", today)
+
+      const a_month_from_now = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())
+      console.log("in a month temp", a_month_from_now)
+      a_month_from_now_formatted = a_month_from_now.toISOString().slice(0, 10);
+      console.log("in a month real", a_month_from_now_formatted)
+
       // Set the value of the date input field to today's date
-      document.getElementById('expense_date').value = today;
+      document.getElementById('expense_date').value = today_formatted;
+      document.getElementById('goal_start_time').value = today_formatted;
+      document.getElementById('goal_end_time').value = a_month_from_now_formatted;
 
       // Function to get category name based on category ID
       function getCategoryName(categoryId) {
