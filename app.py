@@ -159,6 +159,20 @@ def get_monthly_expenses():
 
     return jsonify(monthly_expenses=monthly_expenses)
 
+@app.route('/delete_expenses', methods=['POST'])
+def delete_expenses():
+    data = request.get_json()
+    ids = data.get('ids', [])
+    if not ids:
+        return jsonify({'error': 'No expenses selected'}), 400
+
+    with sqlite3.connect("database.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM EXPENSES WHERE id IN ({})".format(','.join('?'*len(ids))), tuple(ids))
+        conn.commit()
+
+    return jsonify({'success': True})
+
 @app.route('/tables')
 def tables():
   connect = sqlite3.connect('database.db')
