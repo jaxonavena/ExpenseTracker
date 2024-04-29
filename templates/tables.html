@@ -15,12 +15,18 @@
       <th>ID</th>
 			<th>Name</th>
 			<th>Email</th>
+			<th>Balance</th>
+			<th>Income</th>
+			<th>Password</th>
 			</tr>
 			{%for user in users_data%}
 			<tr>
 				<td>{{user[0]}}</td>
 				<td>{{user[1]}}</td>
 				<td>{{user[2]}}</td>
+				<td>{{user[3]}}</td>
+				<td>{{user[4]}}</td>
+				<td>{{user[5]}}</td>
 				</tr>
 			{%endfor%}
 		</table>
