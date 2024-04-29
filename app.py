@@ -16,16 +16,19 @@ def index():
 
 
 connect = sqlite3.connect('database.db')
-connect.execute('CREATE TABLE IF NOT EXISTS USERSS (ID INTEGER PRIMARY KEY, name TEXT, email TEXT, balance FLOAT, income FLOAT, password TEXT)')
+connect.execute('CREATE TABLE IF NOT EXISTS USERSS (ID INTEGER PRIMARY KEY, name TEXT, email TEXT, balance REAL, income REAL, password TEXT)')
 connect.execute('CREATE TABLE IF NOT EXISTS EXPENSES (ID INTEGER PRIMARY KEY, user_id INTEGER, description TEXT, date TEXT, amount REAL, category TEXT, FOREIGN KEY(user_id) REFERENCES USERSS(ID))')
 connect.execute('CREATE TABLE IF NOT EXISTS GOALS (ID INTEGER PRIMARY KEY, user_id INTEGER, title TEXT, description TEXT, target_amount REAL, start_time TEXT, end_time TEXT, progress_level TEXT, priority_level TEXT, frequency TEXT, FOREIGN KEY(user_id) REFERENCES USERSS(ID))')
-   
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         with sqlite3.connect("database.db") as connect:
             user_id_tuple = connect.execute("SELECT CASE WHEN MAX(ID) IS NULL THEN 1 ELSE MAX(ID) + 1 END AS next_id FROM USERSS")
             user_id = user_id_tuple.fetchone()[0]
+            print("SIGNUP USER ID", user_id)
+            # session['user_id'] = user_id
+
             name = request.form['name_signup']
             email = request.form['email_signup']
             balance = float(request.form['balance_signup'])
@@ -47,8 +50,21 @@ def login():
           cursor = connect.cursor()
           cursor.execute("SELECT password FROM USERSS WHERE email = ?", (email,))
           user = cursor.fetchone()
+          print("this is the cursor fetchone user", user)
+
+          cursor.execute("SELECT ID FROM USERSS WHERE email = ?", (email,))
+          user_id_row = cursor.fetchone()
+          user_id = user_id_row[0] if user_id_row else None
+
+          session['user_id'] = user_id
+          print("THIS IS setting user_id", user_id)
+
           if user and bcrypt.check_password_hash(user[0], password):
-              session['user_id'] = user[0]
+              # session['user_id'] = user[0]
+              # print("setting user_id", user[0])
+
+
+
               cursor.execute("SELECT balance, income FROM USERSS WHERE email=?", (email,))
               user_data = cursor.fetchone()
               user_id = session.get('user_id')
@@ -99,7 +115,7 @@ def add_expense():
 def get_transactions():
     user_id = session.get('user_id')
     if not user_id:
-        return {'error': 'User not logged in'}, 401 
+        return {'error': 'User not logged in'}, 401
 
     with sqlite3.connect("database.db") as connect:
         connect.row_factory = sqlite3.Row
@@ -111,9 +127,46 @@ def get_transactions():
 
     return {'expenses': expenses_list}
 
+
+
+@app.route('/update_settings', methods=['POST'])
+def update_settings():
+    data = request.get_json()
+    print(data)
+
+    user_id = session.get('user_id')
+    print("USER ID", user_id)
+
+
+    if not user_id:
+        return jsonify({'error': 'User not logged in'}), 401
+
+    new_balance = data.get('new_balance')
+    new_income = data.get('new_income')
+
+    print("new balance after json", new_balance)
+    print("new income after json", new_income)
+
+
+    with sqlite3.connect("database.db") as connect:
+        cursor = connect.cursor()
+
+        # cursor.execute("SELECT email FROM USERSS WHERE ID = ?", (user_id,))
+        # email = cursor.fetchone()
+        # print("EMAIL", email)
+        cursor.execute("UPDATE USERSS SET balance = ?, income = ? WHERE ID = ?", (new_balance, new_income, user_id))
+        connect.commit()
+
+    return jsonify({'success': True})
+
+
 @app.route('/add_goal', methods=['GET', 'POST'])
 def add_goal():
   if request.method == 'POST':
+    user_id = session.get('user_id')
+    if not user_id:
+      return jsonify({'error': 'User not logged in'}), 401
+
     with sqlite3.connect("database.db") as connect:
       goal_id = request.form['goal_id'] # TODO: MAKE IT COUNT ON IT'S OWN
       user_id = request.form['user_id'] # TODO: MAKE IT SOURCE THE USER ID, AND ONLY ALLOW USERS TO MAKE EXPENSES AND GOALS
@@ -151,7 +204,7 @@ def get_monthly_expenses():
 
         for i in range(1, 13):
             cursor.execute("""
-                SELECT SUM(amount) as total FROM EXPENSES 
+                SELECT SUM(amount) as total FROM EXPENSES
                 WHERE user_id = ? AND strftime('%m', date) = ?
             """, (user_id, f"{i:02}"))
             result = cursor.fetchone()

@@ -236,11 +236,51 @@
           <!-- Transactions will be dynamically loaded here -->
         </div>
       </div>
+
+
       <div id="settings" class="content-section">
-        <span>HHHHHH</span>
+        <h2>User Settings</h2>
+        <div id="settings-form">
+          <label for="balance">Balance:</label>
+          <input type="number" id="new_balance" name="balance" required><br><br>
+
+          <label for="income">Income:</label>
+          <input type="number" id="new_income" name="income" required><br><br>
+
+          <button id="update-settings-btn" onclick="updateSettings()">Update Settings</button>
+        </div>
       </div>
     </div>
+
+
+
     <script>
+      function updateSettings() {
+        const new_balance = document.getElementById('new_balance').valueAsNumber;
+        const new_income = document.getElementById('new_income').valueAsNumber;
+
+        console.log("balance:", new_balance);
+        console.log("income:", new_income);
+
+        fetch("/update_settings", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ new_balance: new_balance, new_income: new_income })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+              // nothing
+            } else {
+                console.error('Failed to update settings:', data.error);
+            }
+        })
+        .catch(error => console.error("Error updating settings:", error));
+    }
+
+
       fetch("/monthly_expenses")
         .then((response) => response.json())
         .then((data) => {
@@ -357,11 +397,17 @@
           e.preventDefault();
           const sectionId = this.getAttribute("href");
           showSection(sectionId);
+
+          if (sectionId === "#settings") {
+          }
+
           if (sectionId === "#transactions") {
             fetchTransactions();
           }
         });
       });
+
+
 
       function fetchTransactions() {
         fetch("/get_transactions")
@@ -398,6 +444,7 @@
           transactionList.appendChild(div);
         });
       }
+
 
       document.getElementById("new_expense_form").onsubmit = function () {
         document.getElementById("submit_button").disabled = true;
