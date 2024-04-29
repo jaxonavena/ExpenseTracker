@@ -185,7 +185,22 @@ def get_transactions():
 
     return {'expenses': expenses_list}
 
+@app.route('/get_goals')
+def get_goals():
+    user_id = session.get('user_id')
+    if not user_id:
+        return {'error': 'User not logged in'}, 401
 
+    with sqlite3.connect("database.db") as connect:
+        connect.row_factory = sqlite3.Row
+        cursor = connect.cursor()
+        cursor.execute("SELECT * FROM GOALS WHERE user_id = ?", (user_id,))
+        goals = cursor.fetchall()
+        # Convert each row into a dictionary
+        goals_list = [dict(goal) for goal in goals]
+        print("GOALS LIST FROM GET GOALS: ", goals_list)
+
+    return {'goals': goals_list}
 
 @app.route('/update_settings', methods=['POST'])
 def update_settings():
@@ -291,6 +306,20 @@ def delete_expenses():
     with sqlite3.connect("database.db") as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM EXPENSES WHERE id IN ({})".format(','.join('?'*len(ids))), tuple(ids))
+        conn.commit()
+
+    return jsonify({'success': True})
+
+@app.route('/delete_goals', methods=['POST'])
+def delete_goals():
+    data = request.get_json()
+    ids = data.get('ids', [])
+    if not ids:
+        return jsonify({'error': 'No goals selected'}), 400
+
+    with sqlite3.connect("database.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM GOALS WHERE id IN ({})".format(','.join('?'*len(ids))), tuple(ids))
         conn.commit()
 
     return jsonify({'success': True})
