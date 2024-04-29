@@ -267,7 +267,7 @@ def add_goal():
       cursor = connect.cursor()
       cursor.execute("INSERT INTO GOALS (id, user_id, title, description, target_amount, start_time, end_time, progress_level, priority_level, frequency) VALUES (?,?,?,?,?,?,?,?,?,?)", (goal_id, user_id, title, description, target_amount, start_time, end_time, progress_level_name, priority_level_name, frequency_name))
       connect.commit()
-    return render_template("home.html")
+    return jsonify({'success': True})
   else:
     return render_template('add_goal.html')
 

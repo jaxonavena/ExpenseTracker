@@ -90,7 +90,6 @@
         background: #ffffff;
       }
 
-
       .transaction-item p {
         margin: 5px 0;
         color: #333;
@@ -321,56 +320,52 @@
         </div>
       </div>
 
-      <div id="goals" class="content-section"> 
+      <div id="goals" class="content-section">
+        <h2>Goals</h2>
+        <button id="toggle-add-goal-form" onclick="toggleAddGoalForm()">
+          Add New Goal
+        </button>
+        <button id="delete-selected-goals" onclick="deleteSelectedGoals()">
+          Delete Selected
+        </button>
+        <div id="add-goal-container" style="display: none">
+          <form id="new_goal_form">
+            <input type="text" placeholder="Title" name="title" required />
+            <input
+              type="text"
+              placeholder="Description"
+              name="description"
+              required
+            />
+            <input
+              type="number"
+              placeholder="Target Amount"
+              name="target_amount"
+              required
+            />
+            <input
+              type="date"
+              name="start_time"
+              id="goal_start_time"
+              required
+            />
+            <input type="date" name="end_time" id="goal_end_time" required />
 
-          <h2>Goals</h2>
-          <button id="toggle-add-goal-form" onclick="toggleAddGoalForm()">
-              Add New Goal
-          </button>
-          <button id="delete-selected-goals" onclick="deleteSelectedGoals()">
-            Delete Selected
-          </button>
-          <div id="add-goal-container" style="display: none">
-              <form id="new_goal_form" method="POST" action="/add_goal">
-                  <input type="text" placeholder="Title" name="title" required />
-                  <input type="text" placeholder="Description" name="description" required />
-                  <input type="number" placeholder="Target Amount" name="target_amount" required />
-                  <input type="date" name="start_time" id="goal_start_time" required />
-                  <input type="date" name="end_time" id="goal_end_time" required />
+            <select id="progress_level" name="progress_level" required>
+              <option value="">Progress Level</option>
+              <option value="fresh-start-prog">Fresh Start</option>
+              <option value="gaining-ground-prog">Gaining Ground</option>
+              <option value="halfway-there-prog">Halfway There</option>
+              <option value="almost-done-prog">Almost Done</option>
+              <option value="completedd-prog">Completed</option>
+            </select>
 
-                  <select id="progress_level" name="progress_level" required>
-                    <option value="">Progress Level</option>
-                    <option value="fresh-start-prog">Fresh Start</option>
-                    <option value="gaining-ground-prog">Gaining Ground</option>
-                    <option value="halfway-there-prog">Halfway There</option>
-                    <option value="almost-done-prog">Almost Done</option>
-                    <option value="completedd-prog">Completed</option>
-                  </select>
-
-                  <select id="priority-level" name="priority_level" required>
-                    <option value="">Priority Level</option>
-                    <option value="high-priority">High</option>
-                    <option value="medium-priority">Medium</option>
-                    <option value="low-priority">Low</option>
-                  </select>
-
-                  <select id="frequency" name="frequency" required>
-                    <option value="">Frequency</option>
-                    <option value="daily-freq">Daily</option>
-                    <option value="weekly-freq">Weekly</option>
-                    <option value="biweekly-freq">Biweekly</option>
-                    <option value="monthly-freq">Monthly</option>
-                    <option value="quarterly-freq">Quarterly</option>
-                    <option value="yearly-freq">Yearly</option>
-                  </select>
-
-                  <button type="submit">Add Goal</button>
-              </form>
-          </div>
-          <div id="goals-list">
-            <!-- Display existing goals here -->
-          </div>
-      </div>
+            <select id="priority-level" name="priority_level" required>
+              <option value="">Priority Level</option>
+              <option value="high-priority">High</option>
+              <option value="medium-priority">Medium</option>
+              <option value="low-priority">Low</option>
+            </select>
 
             <select id="frequency" name="frequency" required>
               <option value="">Frequency</option>
@@ -382,10 +377,14 @@
               <option value="yearly-freq">Yearly</option>
             </select>
 
-            <button type="submit">Add Goal</button>
+            <button type="submit" id="add-goal-button" onclick="addGoalForm()">
+              Add Goal
+            </button>
           </form>
         </div>
-        <!-- Display existing goals here -->
+        <div id="goals-list">
+          <!-- Display existing goals here -->
+        </div>
       </div>
 
       <div id="settings" class="content-section">
@@ -518,7 +517,7 @@
                 sectionToShow.style.display = "block";
               }
             }
-      
+
             document.querySelectorAll(".sidebar a").forEach(function (link) {
               link.addEventListener("click", function (e) {
                 e.preventDefault();
@@ -728,10 +727,6 @@
             .catch(error => console.error("Error deleting goals:", error));
         }
 
-        function updateSettings() {
-          const new_balance = document.getElementById('new_balance').valueAsNumber;
-          const new_income = document.getElementById('new_income').valueAsNumber;
-
 
         document.addEventListener('DOMContentLoaded', function () {
           const form = document.getElementById('new_expense_form');
@@ -756,6 +751,35 @@
               alert('Expense added successfully!');
               window.location.reload();
               showSection("#transactions");  // Refresh transactions view
+            } else {
+              alert('Failed to add expense');
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+          const form = document.getElementById('new_goal_form');
+          if(form) {
+              form.addEventListener('submit', function(event) {
+                  event.preventDefault();
+                  addGoalForm();
+              });
+          }
+      });
+        function addGoalForm() {
+          const form = document.getElementById('new_goal_form');
+          const formData = new FormData(form);
+
+          fetch('/add_goal', {
+            method: 'POST',
+            body: formData  // Do not set Content-Type header, let the browser set it
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert('Expense added successfully!');
+              window.location.reload();
             } else {
               alert('Failed to add expense');
             }
